@@ -1,0 +1,43 @@
+package com.beroe.connectivity;
+
+import com.sshtools.j2ssh.transport.ConsoleKnownHostsKeyVerification;
+import com.sshtools.j2ssh.transport.InvalidHostFileException;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
+public class AlwaysAllowHostKey extends ConsoleKnownHostsKeyVerification {
+
+	public AlwaysAllowHostKey() throws InvalidHostFileException {
+		super();
+	}
+
+	public void onHostKeyMismatch(String s, SshPublicKey sshpublickey,
+			SshPublicKey sshpublickey1) {
+		try {
+			System.out.println("The host key supplied by " + s + " is: "
+					+ sshpublickey1.getFingerprint());
+			System.out.println("The current allowed key for " + s + " is: "
+					+ sshpublickey.getFingerprint());
+			System.out
+					.println("~~~Using Custom Key verification, allowing to pass through~~~");
+			allowHost(s, sshpublickey, false);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+
+	public void onUnknownHost(String s, SshPublicKey sshpublickey) {
+		try {
+			System.out.println("The host " + s
+					+ " is currently unknown to the system");
+			System.out.println("The host key fingerprint is: "
+					+ sshpublickey.getFingerprint());
+			System.out
+					.println("~~~Using Custom Key verification, allowing to pass through~~~");
+			allowHost(s, sshpublickey, false);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+
+}
+

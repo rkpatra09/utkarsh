@@ -1,0 +1,70 @@
+package com.beroe.prerequisites;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+
+import org.apache.log4j.Logger;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+
+import com.beroe.utility.ReadConfiguration;
+import com.beroe.keywords.KeywordsImpl;
+import com.beroe.main.TestExecutor;
+import com.beroe.reporting.WriteHTMLReport;
+import com.beroe.reporting.WriteXlReports;
+
+public class Setup {
+	static String ReportsPath = null;
+	
+	static Logger log = Logger.getLogger(TestExecutor.class.getName());
+	
+	public static void setup() {
+		ReadConfiguration.readValues();
+		System.out.println("inside setup");
+		
+		ReportsPath = "C:\\";
+		String strResultPath = ReportsPath + "TestReports" + "/"; 
+		log.info("xml and html Test Reports will be saved at: " + strResultPath);
+		String strScreenShotPath = ReportsPath + "TestReports" + "/"
+				+ "Screenshots" + "/"; // To Save screenshots in both expected
+										// and error cases
+		log.info("Screenshorts will be saved at: " + strScreenShotPath);
+		String testExeTimeStamp3 = KeywordsImpl.get_timeStamp();
+		String testReport = ReportsPath + "TestReports" + "/Test_Results_"
+				+ testExeTimeStamp3 + ".html";
+		File f = new File(strResultPath);
+		f.mkdirs();;
+		try {
+			WriteHTMLReport.htmlReportHeaders(testReport);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//WriteHTMLReport.htmlReportHeaders(testReport);
+		File file = new File(testReport.replace(".html", ".xls"));
+		WorkbookSettings wbSettings = new WorkbookSettings();
+		wbSettings.setLocale(new Locale("en", "EN"));
+		WritableWorkbook workbook = null;
+		try {
+			workbook = Workbook.createWorkbook(file, wbSettings);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		workbook.createSheet("Report", 0);
+		WritableSheet excelSheet = workbook.getSheet(0);
+		try {
+			WriteXlReports.createLabel(excelSheet);
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+}
